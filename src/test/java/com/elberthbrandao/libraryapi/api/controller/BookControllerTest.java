@@ -1,4 +1,4 @@
-package com.elberthbrandao.libraryapi.resource;
+package com.elberthbrandao.libraryapi.api.controller;
 
 import com.elberthbrandao.libraryapi.api.dto.BookDTO;
 import com.elberthbrandao.libraryapi.entity.Book;
