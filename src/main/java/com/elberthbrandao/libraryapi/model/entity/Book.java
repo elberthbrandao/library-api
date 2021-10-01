@@ -1,4 +1,4 @@
-package com.elberthbrandao.libraryapi.entity;
+package com.elberthbrandao.libraryapi.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

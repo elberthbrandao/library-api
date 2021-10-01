@@ -2,7 +2,8 @@ package com.elberthbrandao.libraryapi.api.controller;
 
 import com.elberthbrandao.libraryapi.api.dto.BookDTO;
 import com.elberthbrandao.libraryapi.api.exceptions.ApiErrors;
-import com.elberthbrandao.libraryapi.entity.Book;
+import com.elberthbrandao.libraryapi.exception.BusinessException;
+import com.elberthbrandao.libraryapi.model.entity.Book;
 import com.elberthbrandao.libraryapi.service.BookService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,12 @@ public class BookController {
     public ApiErrors handlerValidationExceptions (MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         return new ApiErrors(bindingResult);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrors handlerBusinessExceptions (BusinessException ex) {
+        return new ApiErrors(ex);
     }
 
 }

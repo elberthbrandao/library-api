@@ -1,6 +1,6 @@
 package com.elberthbrandao.libraryapi.service;
 
-import com.elberthbrandao.libraryapi.entity.Book;
+import com.elberthbrandao.libraryapi.model.entity.Book;
 import com.elberthbrandao.libraryapi.model.repository.BookRepository;
 import com.elberthbrandao.libraryapi.service.impl.BookServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
