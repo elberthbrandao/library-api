@@ -83,7 +83,6 @@ public class BookControllerTest {
     @Test
     @DisplayName("Deve lançar erro ao tentar cadastrar um livro com isbn já utilizado por outro.")
     public void createBookWithDuplicateIsbn() throws Exception {
-
         BookDTO bookDTO = createNewBookDTO();
         String json = objectMapper.writeValueAsString(bookDTO);
         String messagemErro = "Isbn já cadastrada";
