@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/books")
@@ -31,6 +32,12 @@ public class BookController {
         Book entity = modelMapper.map(bookDTO, Book.class);
         entity = bookService.save(entity);
         return modelMapper.map(entity, BookDTO.class);
+    }
+
+    @GetMapping("{id}")
+    public BookDTO get(@PathVariable Long id) {
+        Book book = bookService.getById(id).get();
+        return modelMapper.map(book, BookDTO.class);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
