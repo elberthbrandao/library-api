@@ -1,5 +1,6 @@
 package com.elberthbrandao.libraryapi.service.impl;
 
+import com.elberthbrandao.libraryapi.api.dto.BookDTO;
 import com.elberthbrandao.libraryapi.exception.BusinessException;
 import com.elberthbrandao.libraryapi.model.entity.Book;
 import com.elberthbrandao.libraryapi.model.repository.BookRepository;
@@ -33,5 +34,10 @@ public class BookServiceImpl implements BookService {
     @Override
     public void delete(Book book) {
 
+    }
+
+    @Override
+    public Book update(Book book) {
+        return null;
     }
 }

@@ -1,5 +1,6 @@
 package com.elberthbrandao.libraryapi.service;
 
+import com.elberthbrandao.libraryapi.api.dto.BookDTO;
 import com.elberthbrandao.libraryapi.model.entity.Book;
 
 import java.util.Optional;
@@ -10,4 +11,6 @@ public interface BookService {
     Optional<Book> getById(Long id);
 
     void delete(Book book);
+
+    Book update(Book book);
 }
