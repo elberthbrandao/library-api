@@ -14,12 +14,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 public class BookServiceTest {
-
     BookService bookService;
 
     @MockBean
@@ -56,7 +57,7 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar um erro de negócio ao tentar salvar um livro com isbn duplicado")
+    @DisplayName("Deve lançar um erro de negócio ao tentar salvar um livro com isbn duplicado.")
     public void shouldNotSaveABookWithDuplicatedISBN () {
         //cenário
         Book book = createValidBook();
@@ -72,6 +73,39 @@ public class BookServiceTest {
 
         Mockito.verify(bookRepository, Mockito.never()).save(book);
 
+    }
+
+    @Test
+    @DisplayName("Deve obter um livro por id.")
+    public void getById() {
+        //cenário
+        Long id = 1L;
+        Book book = createValidBook();
+        book.setId(id);
+        Mockito.when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+
+        //execução
+        Optional<Book> foundBook = bookService.getById(id);
+
+        //verificações
+        assertThat(foundBook.isPresent()).isTrue();
+        assertThat(foundBook.get().getTitle()).isEqualTo(book.getTitle());
+        assertThat(foundBook.get().getAuthor()).isEqualTo(book.getAuthor());
+        assertThat(foundBook.get().getIsbn()).isEqualTo(book.getIsbn());
+    }
+
+    @Test
+    @DisplayName("Deve retornar vaizio ao obter um livro por id quando ele não existe na base.")
+    public void bookNotFoundByIdTest() {
+        //cenário
+        Long id = 1L;
+        Mockito.when(bookRepository.findById(id)).thenReturn(Optional.empty());
+
+        //execução
+        Optional<Book> book = bookService.getById(id);
+
+        //verificações
+        assertThat(book.isPresent()).isFalse();
     }
 
     private Book createValidBook() {
