@@ -5,6 +5,8 @@ import com.elberthbrandao.libraryapi.exception.BusinessException;
 import com.elberthbrandao.libraryapi.model.entity.Book;
 import com.elberthbrandao.libraryapi.model.repository.BookRepository;
 import com.elberthbrandao.libraryapi.service.BookService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -37,6 +39,11 @@ public class BookServiceImpl implements BookService {
             throw new IllegalArgumentException("Id do livro não pode ser nullo.");
         }
         return bookRepository.save(book);
+    }
+
+    @Override
+    public Page<Book> find(Book filter, Pageable pageable) {
+        return null;
     }
 
     @Override
