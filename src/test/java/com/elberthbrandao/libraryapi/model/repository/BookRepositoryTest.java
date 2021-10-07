@@ -38,7 +38,7 @@ public class BookRepositoryTest {
         //execução
         boolean exists = bookRepository.existsByIsbn(isbn);
 
-        //verificação
+        //verificações
         assertThat(exists).isTrue();
     }
 
@@ -51,7 +51,7 @@ public class BookRepositoryTest {
         //execução
         boolean exists = bookRepository.existsByIsbn(isbn);
 
-        //verificação
+        //verificações
         assertThat(exists).isFalse();
     }
 
@@ -65,8 +65,37 @@ public class BookRepositoryTest {
         //execução
         Optional<Book> foundBook = bookRepository.findById(book.getId());
 
-        //verificaçõe
+        //verificações
         assertThat(foundBook.isPresent()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve salvar um livro")
+    public void saveBookTest() {
+        //cenário
+        Book book = createNewBook("123");
+
+        //execução
+        Book savedBook = bookRepository.save(book);
+
+        //verificações
+        assertThat(savedBook.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Deve deletar um livro.")
+    public void deleteBookTest() {
+        //cenário
+        Book book = createNewBook("123");
+        testEntityManager.persist(book);
+        Book foundBook = testEntityManager.find(Book.class, book.getId());
+
+        //execução
+        bookRepository.delete(foundBook);
+
+        //verificações
+        Book deletedBook = testEntityManager.find(Book.class, book.getId());
+        assertThat(deletedBook).isNull();
     }
 
     private Book createNewBook(String isbn) {

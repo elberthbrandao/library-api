@@ -166,7 +166,7 @@ public class BookServiceTest {
                 .hasMessage("Id do livro não pode ser nullo.");
 
         //Junit
-        assertThrows(IllegalArgumentException.class, () -> bookService.save(book));
+        assertThrows(IllegalArgumentException.class, () -> bookService.update(book));
 
         Mockito.verify(bookRepository, Mockito.never()).save(book);
     }
