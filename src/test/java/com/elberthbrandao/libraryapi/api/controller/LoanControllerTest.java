@@ -25,8 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -66,7 +65,6 @@ public class LoanControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(1L));
-
+                .andExpect(content().string("1"));
     }
 }
