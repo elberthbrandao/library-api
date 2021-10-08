@@ -126,7 +126,7 @@ public class BookServiceTest {
         Mockito.when(bookRepository.findAll(Mockito.any(Example.class), Mockito.any(PageRequest.class)))
                 .thenReturn(page);
 
-        //execução  
+        //execução
         Page<Book> result = bookService.find(book, pageRequest);
 
         //verificações

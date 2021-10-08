@@ -57,6 +57,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Optional<Book> getBookByIsbn(String isbn) {
+        return null;
+    }
+
+    @Override
     public void delete(Book book) {
         if(book == null || book.getId() == null) {
             throw new IllegalArgumentException("Id do livro não pode ser nullo.");
