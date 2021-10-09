@@ -6,6 +6,7 @@ import com.elberthbrandao.libraryapi.model.entity.Loan;
 import com.elberthbrandao.libraryapi.service.BookService;
 import com.elberthbrandao.libraryapi.service.LoanService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,9 +54,7 @@ public class LoanControllerTest {
         Book book = Book.builder().id(1L).isbn("123").build();
         Loan loan = Loan.builder().id(1L).customer("Fulano").book(book).loanDate(LocalDate.now()).build();
 
-        BDDMockito.given(bookService.getBookByIsbn("123"))
-                .willReturn(Optional.of(book));
-
+        BDDMockito.given(bookService.getBookByIsbn("123")).willReturn(Optional.of(book));
         BDDMockito.given(loanService.save(Mockito.any(Loan.class))).willReturn(loan);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(LOAN_API)
@@ -66,5 +65,24 @@ public class LoanControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isCreated())
                 .andExpect(content().string("1"));
+    }
+
+    @Test
+    @DisplayName("Deve retornar erro ao tentar fazer um empréstimo de um livro inexistente.")
+    public void invalidIsbnCreateLoanTest() throws Exception{
+        LoanDTO loanDTO = LoanDTO.builder().isbn("123").customer("Fulano").build();
+        String json = new ObjectMapper().writeValueAsString(loanDTO);
+
+        BDDMockito.given(bookService.getBookByIsbn("123")).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(LOAN_API)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value("Livro não encontrado para o isbn informado."));
     }
 }

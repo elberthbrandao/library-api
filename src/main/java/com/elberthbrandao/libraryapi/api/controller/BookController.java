@@ -77,18 +77,4 @@ public class BookController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         bookService.delete(book);
     }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handlerValidationExceptions (MethodArgumentNotValidException ex) {
-        BindingResult bindingResult = ex.getBindingResult();
-        return new ApiErrors(bindingResult);
-    }
-
-    @ExceptionHandler(BusinessException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handlerBusinessExceptions (BusinessException ex) {
-        return new ApiErrors(ex);
-    }
-
 }
