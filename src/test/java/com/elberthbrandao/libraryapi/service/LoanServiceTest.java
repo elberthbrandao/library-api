@@ -1,5 +1,6 @@
 package com.elberthbrandao.libraryapi.service;
 
+import com.elberthbrandao.libraryapi.exception.BusinessException;
 import com.elberthbrandao.libraryapi.model.entity.Book;
 import com.elberthbrandao.libraryapi.model.entity.Loan;
 import com.elberthbrandao.libraryapi.model.repository.BookRepository;
@@ -16,7 +17,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -50,6 +52,7 @@ public class LoanServiceTest {
                 .loanDate(LocalDate.now())
                 .build();
 
+        when(loanRepository.existsByBookAndNotReturned(savingLoan.getBook())).thenReturn(false);
         when(loanRepository.save(savingLoan)).thenReturn(savedLoan);
 
         Loan loan = loanService.save(savingLoan);
@@ -58,5 +61,26 @@ public class LoanServiceTest {
         assertThat(loan.getBook().getId()).isEqualTo(savedLoan.getBook().getId());
         assertThat(loan.getCustomer()).isEqualTo(savedLoan.getCustomer());
         assertThat(loan.getLoanDate()).isEqualTo(savedLoan.getLoanDate());
+    }
+
+    @Test
+    @DisplayName("Deve lançar erro de negócio ao salvar um empréstimo de um livro já emprestado.")
+    public void loanedBookSaveTest() {
+        Book book = Book.builder().id(1L).build();
+
+        Loan savingLoan = Loan.builder()
+                .book(book)
+                .customer("Fulano")
+                .loanDate(LocalDate.now())
+                .build();
+
+        when(loanRepository.existsByBookAndNotReturned(savingLoan.getBook())).thenReturn(true);
+
+        Throwable exception = catchThrowable(() -> loanService.save(savingLoan));
+
+        assertThat(exception).isInstanceOf(BusinessException.class)
+                .hasMessage("Livro já emprestado.");
+
+        verify(loanRepository, never()).save(savingLoan);
     }
 }
