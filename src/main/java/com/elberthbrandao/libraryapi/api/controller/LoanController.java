@@ -42,7 +42,8 @@ public class LoanController {
             @PathVariable Long id,
             @RequestBody ReturnedLoanDto dto) {
 
-        Loan loan = loanService.getById(id).get();
+        Loan loan = loanService.getById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         loan.setReturned(dto.getReturned());
         loanService.update(loan);
     }
