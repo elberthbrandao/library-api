@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReturnedLoanDto {
+public class ReturnedLoanDTO {
     private Boolean returned;
 }

@@ -1,12 +1,14 @@
 package com.elberthbrandao.libraryapi.api.controller;
 
 import com.elberthbrandao.libraryapi.api.dto.LoanDTO;
-import com.elberthbrandao.libraryapi.api.dto.ReturnedLoanDto;
+import com.elberthbrandao.libraryapi.api.dto.LoanFilterDTO;
+import com.elberthbrandao.libraryapi.api.dto.ReturnedLoanDTO;
 import com.elberthbrandao.libraryapi.exception.BusinessException;
 import com.elberthbrandao.libraryapi.model.entity.Book;
 import com.elberthbrandao.libraryapi.model.entity.Loan;
 import com.elberthbrandao.libraryapi.service.BookService;
 import com.elberthbrandao.libraryapi.service.LoanService;
+import com.elberthbrandao.libraryapi.service.LoanServiceTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -26,6 +31,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -116,7 +122,7 @@ public class LoanControllerTest {
     @DisplayName("Deve devolver um livro")
     public void returnBookTest() throws Exception{
         //Cenário
-        ReturnedLoanDto returnedLoanDto = ReturnedLoanDto.builder().returned(true).build();
+        ReturnedLoanDTO returnedLoanDto = ReturnedLoanDTO.builder().returned(true).build();
         Loan loan = Loan.builder().id(1L).build();
         String json = new ObjectMapper().writeValueAsString(returnedLoanDto);
 
@@ -137,7 +143,7 @@ public class LoanControllerTest {
     @DisplayName("Deve retornar 404 quando tentar devolver um livro inexistente.")
     public void returnInexistentBookTest() throws Exception{
         //Cenário
-        ReturnedLoanDto returnedLoanDto = ReturnedLoanDto.builder().returned(true).build();
+        ReturnedLoanDTO returnedLoanDto = ReturnedLoanDTO.builder().returned(true).build();
         String json = new ObjectMapper().writeValueAsString(returnedLoanDto);
 
         BDDMockito.given(loanService.getById(Mockito.anyLong())).willReturn(Optional.empty());
@@ -148,5 +154,33 @@ public class LoanControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
         ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve filtrar empréstimos.")
+    public void findLoanTests() throws Exception {
+        //Cenário
+        Long id = 1L;
+        Loan loan = LoanServiceTest.createLoan();
+        loan.setId(id);
+        Book book = Book.builder().id(1L).isbn("123").build();
+        loan.setBook(book);
+
+        BDDMockito.given(loanService.find(Mockito.any(LoanFilterDTO.class), Mockito.any(Pageable.class)))
+                .willReturn(new PageImpl<Loan>(List.of(loan), PageRequest.of(0, 10), 1));
+
+        String queryString = String.format("?isbn=%s&customer=%s&page=0&size=10",
+                book.getIsbn(), loan.getCustomer());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(LOAN_API.concat(queryString))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("content", Matchers.hasSize(1)))
+                .andExpect(jsonPath("totalElements").value(1))
+                .andExpect(jsonPath("pageable.pageSize").value(10))
+                .andExpect(jsonPath("pageable.pageNumber").value(0));
     }
 }
