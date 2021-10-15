@@ -8,6 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -31,6 +33,32 @@ public class LoanRepositoryTest {
     @DisplayName("Deve verificar se existe um empréstimo não devolvido para o livro.")
     public void existsByBookAndNotReturnedTest() {
         //Cenário
+        Loan loan = createAndPersistLoan();
+
+        //Execução
+        boolean exists = loanRepository.existsByBookAndNotReturned(loan.getBook());
+
+        //Verificações
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve buscar um empréstimo pelo isbn do livro ou customer.")
+    public void findByBookIsbnOrCustomer() {
+        Loan loan = createAndPersistLoan();
+
+        Page<Loan> result = loanRepository.findByBookIsbnOrCustomer(
+                loan.getBook().getIsbn(), loan.getCustomer(), PageRequest.of(0, 10)
+        );
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent()).contains(loan);
+        assertThat(result.getPageable().getPageSize()).isEqualTo(10);
+        assertThat(result.getPageable().getPageNumber()).isEqualTo(0);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+    }
+
+    public Loan createAndPersistLoan(){
         Book book = createNewBook("123");
 
         Loan loan = Loan.builder().book(book).customer("Fulano").loanDate(LocalDate.now()).build();
@@ -38,10 +66,6 @@ public class LoanRepositoryTest {
         entityManager.persist(book);
         entityManager.persist(loan);
 
-        //Execução
-        boolean exists = loanRepository.existsByBookAndNotReturned(book);
-
-        //Verificações
-        assertThat(exists).isTrue();
+        return loan;
     }
 }
