@@ -2,6 +2,7 @@ package com.elberthbrandao.libraryapi.service.impl;
 
 import com.elberthbrandao.libraryapi.api.dto.LoanFilterDTO;
 import com.elberthbrandao.libraryapi.exception.BusinessException;
+import com.elberthbrandao.libraryapi.model.entity.Book;
 import com.elberthbrandao.libraryapi.model.entity.Loan;
 import com.elberthbrandao.libraryapi.model.repository.LoanRepository;
 import com.elberthbrandao.libraryapi.service.LoanService;
@@ -39,5 +40,10 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public Page<Loan> find(LoanFilterDTO loanFilterDTO, Pageable pageable) {
         return loanRepository.findByBookIsbnOrCustomer(loanFilterDTO.getIsbn(), loanFilterDTO.getCustomer(), pageable);
+    }
+
+    @Override
+    public Page<Loan> getLoansByBook(Book book, Pageable pageable) {
+        return loanRepository.findByBook(book, pageable);
     }
 }
