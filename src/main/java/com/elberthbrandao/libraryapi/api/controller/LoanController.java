@@ -8,6 +8,8 @@ import com.elberthbrandao.libraryapi.model.entity.Book;
 import com.elberthbrandao.libraryapi.model.entity.Loan;
 import com.elberthbrandao.libraryapi.service.BookService;
 import com.elberthbrandao.libraryapi.service.LoanService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -24,12 +26,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/loans")
 @RequiredArgsConstructor
+@Api("Loan API")
 public class LoanController {
     private final LoanService loanService;
     private final BookService bookService;
     private final ModelMapper modelMapper;
 
     @GetMapping
+    @ApiOperation("Obtains a loan by params")
     public Page<LoanDTO> find(LoanFilterDTO loanFilterDTO, Pageable pageable) {
         Page<Loan> result = loanService.find(loanFilterDTO, pageable);
         List<LoanDTO> loans = result.getContent()
@@ -46,6 +50,7 @@ public class LoanController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Create a loan")
     public Long create(@RequestBody LoanDTO loanDTO) {
         Book book = bookService.getBookByIsbn(loanDTO.getIsbn())
                 .orElseThrow(() ->
@@ -62,6 +67,7 @@ public class LoanController {
     }
 
     @PatchMapping("{id}")
+    @ApiOperation("Return a book")
     public void returnBook(@PathVariable Long id, @RequestBody ReturnedLoanDTO dto) {
         Loan loan = loanService.getById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
