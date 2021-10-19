@@ -27,6 +27,6 @@ public class ScheduleService {
                 .map(Loan::getCustomerEmail)
                 .collect(Collectors.toList());
 
-        emailService.sendMails(mailsList);
+        emailService.sendMails(message, mailsList);
     }
 }
