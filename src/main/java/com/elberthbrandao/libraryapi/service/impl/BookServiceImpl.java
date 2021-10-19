@@ -1,20 +1,15 @@
 package com.elberthbrandao.libraryapi.service.impl;
 
-import com.elberthbrandao.libraryapi.api.dto.BookDTO;
 import com.elberthbrandao.libraryapi.exception.BusinessException;
 import com.elberthbrandao.libraryapi.model.entity.Book;
-import com.elberthbrandao.libraryapi.model.entity.Loan;
 import com.elberthbrandao.libraryapi.model.repository.BookRepository;
 import com.elberthbrandao.libraryapi.service.BookService;
-import org.apache.tomcat.jni.Local;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Service
